@@ -27,7 +27,12 @@ public class DataInitializer implements CommandLineRunner {
                 .description("Nhân viên thu ngân / Bán hàng")
                 .build()));
 
-        if (!userRepository.existsByUsername("admin")) {
+        userRepository.findByUsername("admin").ifPresentOrElse(admin -> {
+            admin.setFullName("Quản trị viên");
+            admin.setRole(adminRole);
+            admin.setIsActive(true);
+            userRepository.save(admin);
+        }, () -> {
             userRepository.save(User.builder()
                     .username("admin")
                     .passwordHash("123456")
@@ -37,9 +42,14 @@ public class DataInitializer implements CommandLineRunner {
                     .role(adminRole)
                     .isActive(true)
                     .build());
-        }
+        });
 
-        if (!userRepository.existsByUsername("staff")) {
+        userRepository.findByUsername("staff").ifPresentOrElse(staff -> {
+            staff.setFullName("Nhân viên thu ngân");
+            staff.setRole(staffRole);
+            staff.setIsActive(true);
+            userRepository.save(staff);
+        }, () -> {
             userRepository.save(User.builder()
                     .username("staff")
                     .passwordHash("123456")
@@ -49,18 +59,23 @@ public class DataInitializer implements CommandLineRunner {
                     .role(staffRole)
                     .isActive(true)
                     .build());
-        }
+        });
 
-        if (!userRepository.existsByUsername("cashier")) {
+        userRepository.findByUsername("cashier").ifPresentOrElse(cashier -> {
+            cashier.setFullName("Nhân viên thu ngân");
+            cashier.setRole(staffRole);
+            cashier.setIsActive(true);
+            userRepository.save(cashier);
+        }, () -> {
             userRepository.save(User.builder()
                     .username("cashier")
                     .passwordHash("123456")
-                    .fullName("Thu ngân quầy POS")
+                    .fullName("Nhân viên thu ngân")
                     .phone("0908889999")
                     .email("cashier@coffeeshop.com")
                     .role(staffRole)
                     .isActive(true)
                     .build());
-        }
+        });
     }
 }
