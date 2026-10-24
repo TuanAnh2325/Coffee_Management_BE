@@ -81,6 +81,7 @@ public class OrderService {
                 .paymentMethod(paymentMethod)
                 .totalAmount(BigDecimal.ZERO)
                 .note(request.getNote())
+                .createdAt(LocalDateTime.now())
                 .completedAt(LocalDateTime.now())
                 .items(new ArrayList<>())
                 .build();

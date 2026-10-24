@@ -24,7 +24,12 @@ public class ReportService {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
 
-        List<Order> todayOrders = orderRepository.findByCreatedAtBetween(startOfDay, endOfDay);
+        List<Order> todayOrders = orderRepository.findAll().stream()
+                .filter(o -> {
+                    LocalDateTime time = o.getCreatedAt() != null ? o.getCreatedAt() : o.getCompletedAt();
+                    return time != null && !time.isBefore(startOfDay) && !time.isAfter(endOfDay);
+                })
+                .toList();
 
         BigDecimal totalRevenue = BigDecimal.ZERO;
         BigDecimal cashRevenue = BigDecimal.ZERO;

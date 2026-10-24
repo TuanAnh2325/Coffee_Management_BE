@@ -48,11 +48,21 @@ public class Order {
     @Column(length = 255)
     private String note;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (completedAt == null && "COMPLETED".equals(orderStatus)) {
+            completedAt = LocalDateTime.now();
+        }
+    }
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
