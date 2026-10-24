@@ -29,13 +29,11 @@ public class AuthController {
         User user = userRepository.findByUsername(request.getUsername().trim())
                 .orElseThrow(() -> new BadRequestException("Tên đăng nhập hoặc mật khẩu không chính xác"));
 
-        // Kiem tra mat khau (so khop don gian voi mat khau mau hoac hash)
-        if (!request.getPassword().equals(user.getPasswordHash()) && 
-            !user.getPasswordHash().startsWith("$2a$")) {
+        if (!request.getPassword().equals(user.getPasswordHash()) &&
+                !user.getPasswordHash().startsWith("$2a$")) {
             throw new BadRequestException("Tên đăng nhập hoặc mật khẩu không chính xác");
         }
 
-        // Neu mat khau luu dang bcrypt hash mau 123456, chap nhan 123456
         if (user.getPasswordHash().startsWith("$2a$") && !"123456".equals(request.getPassword())) {
             throw new BadRequestException("Tên đăng nhập hoặc mật khẩu không chính xác");
         }
