@@ -61,21 +61,5 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
         });
 
-        userRepository.findByUsername("cashier").ifPresentOrElse(cashier -> {
-            cashier.setFullName("Nhân viên thu ngân");
-            cashier.setRole(staffRole);
-            cashier.setIsActive(true);
-            userRepository.save(cashier);
-        }, () -> {
-            userRepository.save(User.builder()
-                    .username("cashier")
-                    .passwordHash("123456")
-                    .fullName("Nhân viên thu ngân")
-                    .phone("0908889999")
-                    .email("cashier@coffeeshop.com")
-                    .role(staffRole)
-                    .isActive(true)
-                    .build());
-        });
     }
 }
