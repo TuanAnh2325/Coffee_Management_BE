@@ -33,6 +33,7 @@ class ProductErrorTest {
         mockMvc.perform(get("/api/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Cà phê Đen đá"));
+                .andExpect(jsonPath("$.code").value("CF-DEN"))
+                .andExpect(jsonPath("$.name", notNullValue()));
     }
 }
