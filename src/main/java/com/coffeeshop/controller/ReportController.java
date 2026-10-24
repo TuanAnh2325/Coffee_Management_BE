@@ -19,4 +19,11 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> getTodayReport() {
         return ResponseEntity.ok(reportService.getTodayReport());
     }
+
+    @GetMapping("/month")
+    public ResponseEntity<Map<String, Object>> getMonthReport(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        return ResponseEntity.ok(reportService.getMonthReport(year, month));
+    }
 }
