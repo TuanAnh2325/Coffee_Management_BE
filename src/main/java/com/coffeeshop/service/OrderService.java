@@ -7,6 +7,7 @@ import com.coffeeshop.exception.BadRequestException;
 import com.coffeeshop.exception.ResourceNotFoundException;
 import com.coffeeshop.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public Order createOrder(OrderRequest request) {
         if (request == null) {
             throw new BadRequestException("Dữ liệu đơn hàng không được để trống");

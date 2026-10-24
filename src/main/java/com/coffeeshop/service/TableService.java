@@ -5,6 +5,8 @@ import com.coffeeshop.exception.BadRequestException;
 import com.coffeeshop.exception.ResourceNotFoundException;
 import com.coffeeshop.repository.DiningTableRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ public class TableService {
     private final com.coffeeshop.repository.OrderRepository orderRepository;
     private static final Set<String> VALID_STATUSES = Set.of("EMPTY", "SERVING", "RESERVED");
 
+    @Cacheable(value = "tables", key = "(#status != null ? #status : 'all') + '_' + (#area != null ? #area : 'all')")
     public List<DiningTable> getAllTables(String status, String area) {
         if (status != null && !status.isBlank()) {
             return diningTableRepository.findByStatus(status.toUpperCase());
@@ -29,12 +32,14 @@ public class TableService {
         return diningTableRepository.findAll();
     }
 
+    @Cacheable(value = "tables", key = "#id")
     public DiningTable getTableById(Integer id) {
         return diningTableRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bàn với ID: " + id));
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public DiningTable updateTableStatus(Integer id, String status) {
         if (status == null || !VALID_STATUSES.contains(status.toUpperCase())) {
             throw new BadRequestException("Trạng thái bàn không hợp lệ. Chỉ chấp nhận: EMPTY, SERVING, RESERVED");
@@ -46,6 +51,7 @@ public class TableService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public DiningTable createTable(DiningTable table) {
         if (table == null || table.getTableNumber() == null || table.getTableNumber().trim().isEmpty()) {
             throw new BadRequestException("Số hiệu bàn không được để trống");
@@ -66,6 +72,7 @@ public class TableService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public DiningTable updateTable(Integer id, DiningTable details) {
         DiningTable table = getTableById(id);
         if (details.getTableNumber() != null && !details.getTableNumber().trim().isEmpty()) {
@@ -89,6 +96,7 @@ public class TableService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public void deleteTable(Integer id) {
         DiningTable table = getTableById(id);
         if (orderRepository.existsByTableId(id)) {

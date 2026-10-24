@@ -12,6 +12,8 @@ import com.coffeeshop.repository.InventoryItemRepository;
 import com.coffeeshop.repository.ProductRepository;
 import com.coffeeshop.repository.ProductSizeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class ProductService {
     private final InventoryItemRepository inventoryItemRepository;
     private final com.coffeeshop.repository.OrderItemRepository orderItemRepository;
 
+    @Cacheable(value = "products", key = "#categoryId != null ? #categoryId : 'all'")
     public List<Product> getAllProducts(Integer categoryId) {
         if (categoryId != null) {
             return productRepository.findByCategoryId(categoryId);
@@ -35,6 +38,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    @Cacheable(value = "products", key = "#id")
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + id));
@@ -45,6 +49,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product createProduct(ProductRequest request) {
         if (request == null) {
             throw new BadRequestException("Dữ liệu món không được để trống");
@@ -98,6 +103,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product updateProduct(Long id, ProductRequest request) {
         Product product = getProductById(id);
         if (request == null) {
@@ -148,6 +154,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product toggleProductAvailability(Long id) {
         Product product = getProductById(id);
         product.setIsAvailable(product.getIsAvailable() == null || !product.getIsAvailable());
@@ -155,6 +162,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long id) {
         Product product = getProductById(id);
         if (orderItemRepository.existsByProductId(id)) {
