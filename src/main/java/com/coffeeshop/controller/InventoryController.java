@@ -20,4 +20,16 @@ public class InventoryController {
     public ResponseEntity<List<Map<String, Object>>> getInventory() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
     }
+
+    @PutMapping("/{productId}")
+    public ResponseEntity<Map<String, Object>> updateStock(
+            @PathVariable Long productId,
+            @RequestBody Map<String, Integer> payload) {
+        Integer quantity = payload != null ? payload.get("quantity") : null;
+        if (quantity == null || quantity < 0) {
+            throw new com.coffeeshop.exception.BadRequestException("Số lượng tồn kho phải >= 0");
+        }
+        inventoryService.updateStock(productId, quantity);
+        return ResponseEntity.ok(Map.of("message", "Cập nhật kho thành công", "productId", productId, "quantity", quantity));
+    }
 }

@@ -1,5 +1,8 @@
 package com.coffeeshop.controller;
 
+import com.coffeeshop.entity.DiningTable;
+import com.coffeeshop.repository.DiningTableRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,26 @@ class TableErrorTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private DiningTableRepository tableRepository;
+
+    private Integer testTableId;
+
+    @BeforeEach
+    void setUp() {
+        if (tableRepository.count() == 0) {
+            DiningTable table = tableRepository.save(DiningTable.builder()
+                    .tableNumber("Bàn 01")
+                    .area("Tầng 1")
+                    .status("EMPTY")
+                    .capacity(4)
+                    .build());
+            testTableId = table.getId();
+        } else {
+            testTableId = tableRepository.findAll().get(0).getId();
+        }
+    }
+
     @Test
     @DisplayName("Test loi: Tim ban khong ton tai (ID = 999) -> 404 Not Found")
     void testGetNonExistentTable() throws Exception {
@@ -37,7 +60,7 @@ class TableErrorTest {
             }
         """;
 
-        mockMvc.perform(put("/api/tables/1/status")
+        mockMvc.perform(put("/api/tables/" + testTableId + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isBadRequest())
@@ -54,7 +77,7 @@ class TableErrorTest {
             }
         """;
 
-        mockMvc.perform(put("/api/tables/1/status")
+        mockMvc.perform(put("/api/tables/" + testTableId + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
                 .andExpect(status().isOk())

@@ -36,4 +36,20 @@ public class TableController {
         String newStatus = payload != null ? payload.get("status") : null;
         return ResponseEntity.ok(tableService.updateTableStatus(id, newStatus));
     }
+
+    @PostMapping
+    public ResponseEntity<DiningTable> createTable(@RequestBody DiningTable table) {
+        return ResponseEntity.ok(tableService.createTable(table));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DiningTable> updateTable(@PathVariable Integer id, @RequestBody DiningTable table) {
+        return ResponseEntity.ok(tableService.updateTable(id, table));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteTable(@PathVariable Integer id) {
+        tableService.deleteTable(id);
+        return ResponseEntity.ok(Map.of("message", "Đã xóa bàn thành công"));
+    }
 }

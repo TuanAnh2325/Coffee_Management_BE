@@ -13,4 +13,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByOrderCode(String orderCode);
     List<Order> findByOrderStatus(String orderStatus);
     List<Order> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    boolean existsByTableId(Integer tableId);
 }
